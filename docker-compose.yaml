@@ -1,0 +1,17 @@
+version: "3.8"
+name: "local_env_template"
+services:
+#  prometheus:
+#    image: prom/prometheus:v2.43.0
+
+  grafana:
+    image: grafana/grafana:9.1.2
+
+#  jaeger:
+#    image: jaegertracing/all-in-one:1.23
+
+#  postgres:
+#    image: postgres:15.2
+#
+#  keycloak:
+#    image: bitnami/keycloak:20
