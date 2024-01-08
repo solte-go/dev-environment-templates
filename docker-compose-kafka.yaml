@@ -1,0 +1,77 @@
+version: "3.8"
+name: "local_env_template"
+services:
+  zookeeper:
+    container_name: zookeeper_local_env
+    image: confluentinc/cp-zookeeper:latest
+    ports:
+      - "22181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    healthcheck:
+      test: nc -z localhost 2181 || exit -1
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  kafka:
+    container_name: kafka_brocker_local_env
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    healthcheck:
+      test: nc -z localhost 29092 || exit -1
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    ports:
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  kafka-ui:
+    container_name: kafka_ui_local_env
+    image: provectuslabs/kafka-ui:latest
+    depends_on:
+      - kafka
+    ports:
+      - "8081:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      DYNAMIC_CONFIG_ENABLED: "true"
+
+  #  schema-registry:
+  #    image: confluentinc/cp-schema-registry:4.1.1
+  #    hostname: schema-registry
+  #    ports:
+  #      - "38081:38081"
+  #    depends_on:
+  #      - kafka
+  #    environment:
+  #      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper:2181
+  #      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+  #      SCHEMA_REGISTRY_LISTENERS: http://schema-registry:38081
+  #      SCHEMA_REGISTRY_DEBUG: "true"
+
+  kafka-rest:
+    container_name: kafka_rest_local_env
+    image: confluentinc/cp-kafka-rest:4.1.1
+    hostname: kafka-rest
+    ports:
+      - "38082:38082"
+    #    depends_on:
+    #      - schema-registry
+    environment:
+      KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper:2181
+      #      KAFKA_REST_SCHEMA_REGISTRY_URL: schema-registry:38081
+      KAFKA_REST_HOST_NAME: kafka-rest
+      KAFKA_REST_LISTENERS: http://kafka-rest:38082

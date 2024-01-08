@@ -1,4 +1,4 @@
-FROM prom/prometheus:v2.43.0
+FROM prom/prometheus:v2.48.1
 
 COPY ./configs/prometheus/prometheus_cfg.yaml /etc/prometheus/cfg.yaml
 
