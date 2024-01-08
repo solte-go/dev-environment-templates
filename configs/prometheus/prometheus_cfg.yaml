@@ -9,18 +9,8 @@ rule_files:
 # - "second.rules"
 
 scrape_configs:
-#  - job_name: offers-killer
-#    metrics_path: /metrics
-#    # scheme defaults to 'http'.
-#    static_configs:
-#      - targets: ["192.168.1.34:8080"]
-
-  - job_name: "user-management"
+  - job_name: "offers-killer"
     metrics_path: /metrics
     # scheme defaults to 'http'.
     static_configs:
-      - targets: [ "192.168.1.34:8091" ]
-
-  - job_name: "krakend"
-    static_configs:
-      - targets: [ '192.168.1.34:9091' ]
+      - targets: ["192.168.1.34:8080"]
