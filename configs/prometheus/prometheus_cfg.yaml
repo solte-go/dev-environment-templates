@@ -9,9 +9,32 @@ rule_files:
 # - "second.rules"
 
 scrape_configs:
-  - job_name: "offers-killer"
+#  - job_name: "offers-killer"
+#    metrics_path: /metrics
+#    # scheme defaults to 'http'.
+#    static_configs:
+#      - targets: ["192.168.1.34:8080"]
+
+  - job_name: "Kraken-api-gateway"
     metrics_path: /metrics
-    scrape_timeout: 1m
     # scheme defaults to 'http'.
     static_configs:
-      - targets: ["192.168.1.34:8080"]
+      - targets: ["192.168.1.34:9091"]
+
+  - job_name: "user-management"
+    metrics_path: /metrics
+    # scheme defaults to 'http'.
+    static_configs:
+      - targets: ["192.168.1.34:8091"]
+
+  - job_name: "oom-killer-1-20"
+    metrics_path: /metrics
+    # scheme defaults to 'http'.
+    static_configs:
+      - targets: ["192.168.1.34:2112"]
+
+  - job_name: "oom-killer-1-18"
+    metrics_path: /metrics
+    # scheme defaults to 'http'.
+    static_configs:
+      - targets: ["192.168.1.34:2113"]
