@@ -1,0 +1,22 @@
+version: "3.8"
+name: "rabbig_mq"
+services:
+  rabbitmq3:
+    container_name: "rabbitmq"
+    build:
+      context: .
+      dockerfile: ./deploy/rabbitmq_with_metrics.dockerfile
+    environment:
+      - RABBITMQ_DEFAULT_USER=local
+      - RABBITMQ_DEFAULT_PASS=localpwd
+      - RABBITMQ_PLUGINS_DIR=/opt/rabbitmq/plugins:/usr/lib/rabbitmq/plugins
+    ports:
+      # AMQP protocol port
+      - '5672:5672'
+      # HTTP management UI
+      - '15672:15672'
+      # Management
+      - '15692:15692'
+#    volumes:
+#      - ./rabbit/enabled_plugins:/etc/rabbitmq/enabled_plugins
+#      - ./rabbit/:/usr/lib/rabbitmq/plugins
