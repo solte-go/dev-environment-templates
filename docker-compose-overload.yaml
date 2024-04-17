@@ -36,21 +36,37 @@ services:
     networks:
       - local_env_network
 
-  jaeger:
-    container_name: jaeger_local_env
-    restart: on-failure
+  tempo:
+    image: grafana/tempo:latest
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./configs/tempo/tempo.yaml:/etc/tempo.yaml
+      - ./tempo-data:/tmp/tempo
     ports:
-      - "5775:5775/udp"
-      - "6831:6831/udp"
-      - "6832:6832/udp"
-      - "5778:5778"
-      - "16686:16686"
-      - "14268:14268"
-      - "9411:9411"
-    environment:
-      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
-    networks:
-      - local_env_network
+      - "14268:14268" # jaeger ingest
+      - "3200:3200" # tempo
+      - "9095:9095" # tempo grpc
+      - "4317:4317" # otlp grpc
+      - "4318:4318" # otlp http
+      - "9411:9411" # zipkin
+
+  # jaeger:
+  #    container_name: jaeger_local_env
+  #    restart: on-failure
+  #    ports:
+  #      - "5775:5775/udp"
+  #      - "6831:6831/udp"
+  #      - "6832:6832/udp"
+  #      - "5778:5778"
+  #      - "16686:16686"
+  #      - "14268:14268"
+  #      - "9411:9411"
+  #      - "4318:4318"
+  #      - "4317:4317"
+  #    environment:
+  #      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+  #    networks:
+  #      - local_env_network
 
 volumes:
   grafana_dev_volume:
