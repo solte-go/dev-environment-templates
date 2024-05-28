@@ -1,0 +1,60 @@
+version: "3.8"
+name: "local_env_template"
+services:
+  prometheus:
+    image: prom/prometheus:${PROMETHEUS}
+    build:
+      context: .
+      dockerfile: deploy/prometheus.dockerfile
+    container_name: prometheus_local_env
+    ports:
+      - "9090:9090"
+    expose:
+      - 9090
+    volumes:
+      - ./configs/prometheus/prometheus_cfg.yaml:/etc/prometheus/cfg.yaml
+    command:
+      - "--storage.tsdb.retention.time=30d"
+      - "--config.file=/etc/prometheus/cfg.yaml"
+    develop:
+      watch:
+        - action: rebuild
+          path: configs/prometheus/
+          target: etc/prometheus/cfg.yaml
+    networks:
+      - local_env_network
+
+  grafana:
+    image: grafana/grafana:${GRAFANA}
+    container_name: grafana_local_env
+    ports:
+      - "3000:3000"
+    expose:
+      - 3000
+    restart: unless-stopped
+    volumes:
+      - grafana_dev_volume:/var/lib/grafana
+    networks:
+      - local_env_network
+
+  tempo:
+    image: grafana/tempo:${TEMPO}
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./configs/tempo/tempo.yaml:/etc/tempo.yaml
+      - ./configs/tempo/data:/tmp/tempo
+    ports:
+      - "14268:14268" # jaeger ingest
+      - "3200:3200" # tempo
+      - "9095:9095" # tempo grpc
+      - "4317:4317" # otlp grpc
+      - "4318:4318" # otlp http
+      - "9411:9411" # zipkin
+
+volumes:
+  grafana_dev_volume:
+    driver: local
+
+networks:
+  local_env_network:
+    driver: bridge
