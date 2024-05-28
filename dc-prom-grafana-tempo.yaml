@@ -50,7 +50,8 @@ services:
       - "4317:4317" # otlp grpc
       - "4318:4318" # otlp http
       - "9411:9411" # zipkin
-
+    networks:
+      - local_env_network
 volumes:
   grafana_dev_volume:
     driver: local

@@ -10,7 +10,7 @@ services:
     ports:
       - "2181:2181"
     volumes:
-      - ./config/kafka/sasl_scrum:/etc/kafka/secrets
+      - ./configs/kafka/sasl_scram:/etc/kafka/secrets
 
   kafka:
     image: confluentinc/cp-kafka:${KAFKA}
@@ -30,7 +30,7 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf
     volumes:
-      - ./config:/etc/kafka/secrets
+      - ./configs/kafka/sasl_scram:/etc/kafka/secrets
 
   kafka-ui:
     container_name: kafka_ui
@@ -54,9 +54,9 @@ services:
     environment:
       ZOOKEEPER_HOSTS: "zookeeper:2182"
     command: "bash -c 'echo Waiting for Zookeeper to be ready... && \
-                              cub zk-ready zookeeper:2182 120 && \
-                              kafka-configs --bootstrap-server kafka:9092 --entity-type users --entity-name admin --alter --add-config 'SCRAM-SHA-512=[password=admin-secret]' && \
-                              kafka-configs --bootstrap-server kafka:9092 --entity-type users --entity-name kafka --alter --add-config 'SCRAM-SHA-512=[password=kafka-secret]' '"
+cub zk-ready zookeeper:2182 120 && \
+kafka-configs --bootstrap-server kafka:9092 --entity-type users --entity-name admin --alter --add-config 'SCRAM-SHA-512=[password=admin-secret]' && \
+kafka-configs --bootstrap-server kafka:9092 --entity-type users --entity-name kafka --alter --add-config 'SCRAM-SHA-512=[password=kafka-secret]' '"
 
 networks:
   local_env_network:

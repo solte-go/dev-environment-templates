@@ -21,8 +21,8 @@ services:
         - action: rebuild
           path: configs/prometheus/
           target: etc/prometheus/cfg.yaml
-    networks:
-      - local_env_network
+      networks:
+        - local_env_network
 
   grafana:
     image: grafana/grafana:${GRAFANA}
