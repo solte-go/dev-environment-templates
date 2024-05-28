@@ -1,7 +1,11 @@
-.PHONY: run_watch
+.PHONY: run_watch_monitoring_tempo
 run_watch:
-	docker compose -f docker-compose.yaml -f docker-compose-overload.yaml watch
+	docker compose -f dc-prom-grafana-tempo.yaml watch
 
 .PHONY: run_with_kafka_watch
 run_with_kafka_watch:
-	docker compose -f docker-compose.yaml -f docker-compose-kafka.yaml -f docker-compose-overload.yaml watch
+	docker compose -f docker-compose-kafka.yaml -f dc-prom-grafana-tempo.yaml watch
+
+.PHONY: run_with_kafka_watch
+run_with_kafka_watch:
+	docker compose -f docker-compose-kafka.yaml -f dc-prom-grafana-tempo.yaml watch

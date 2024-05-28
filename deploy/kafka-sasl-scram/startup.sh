@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Start the Kafka server
-kafka-server-start /etc/kafka/server.properties &
-
 # Wait until the Kafka server is started
 sleep 30
 

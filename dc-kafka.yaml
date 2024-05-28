@@ -3,7 +3,7 @@ name: "local_env_template"
 services:
   zookeeper:
     container_name: zookeeper_local_env
-    image: confluentinc/cp-zookeeper:latest
+    image: confluentinc/cp-zookeeper:${KAFKA}
     ports:
       - "22181:2181"
     environment:
@@ -18,7 +18,7 @@ services:
 
   kafka:
     container_name: kafka_brocker_local_env
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:${KAFKA}
     depends_on:
       - zookeeper
     healthcheck:
@@ -64,7 +64,7 @@ services:
 
   kafka-rest:
     container_name: kafka_rest_local_env
-    image: confluentinc/cp-kafka-rest:4.1.1
+    image: confluentinc/cp-kafka-rest:${KAFKA_REST}
     hostname: kafka-rest
     ports:
       - "38082:38082"
