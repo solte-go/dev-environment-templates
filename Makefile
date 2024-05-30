@@ -16,3 +16,7 @@ run_with_kafka_sasl:
 .PHONY: run_with_kafka_ssl
 run_with_kafka_ssl:
 	docker compose -f dc-kafka-ssl.yaml up -d
+
+.PHONY: teardown_with_kafka_ssl
+teardown_with_kafka_ssl:
+	docker compose -f dc-kafka-ssl.yaml down -v
