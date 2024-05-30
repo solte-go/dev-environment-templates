@@ -12,3 +12,7 @@ run_with_kafka_watch:
 .PHONY: run_with_kafka_sasl-scram
 run_with_kafka_sasl:
 	docker compose -f dc-kafka-sasl-scram.yaml up -d
+
+.PHONY: run_with_kafka_ssl
+run_with_kafka_ssl:
+	docker compose -f dc-kafka-ssl.yaml up -d
