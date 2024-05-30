@@ -1,0 +1,38 @@
+version: '3.8'
+name: "kafka-ssl"
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:${KAFKA}
+    ports:
+      - "22182:22182"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 22182
+      KAFKA_OPTS: "-Djavax.net.debug=ssl"
+    volumes:
+      - ./configs/kafka/ssl/certs:/etc/kafka/secrets
+
+  kafka:
+    image: confluentinc/cp-kafka:${KAFKA}
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:22182
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,EXTERNAL://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:SSL
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+#      KAFKA_ADVERTISED_LISTENERS: SSL://localhost:19092
+      KAFKA_SSL_KEY_CREDENTIALS: broker1_sslkey.creds
+      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.broker1.truststore.jks
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: broker1_truststore.creds
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker1.keystore.jks
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: broker1_keystore.creds
+      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: ""
+      KAFKA_SSL_CLIENT_AUTH: requested
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+#      KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SSL
+      KAFKA_OPTS: "-Djavax.net.debug=ssl"
+    volumes:
+      - ./configs/kafka/ssl/certs/broker1:/etc/kafka/secrets
