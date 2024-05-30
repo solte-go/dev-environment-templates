@@ -9,6 +9,8 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"strings"
+	"sync"
 	"time"
 )
 
@@ -62,22 +64,33 @@ func produce(kafkaBroker, kafkaTopic string, tlsConfig *tls.Config) error {
 
 	defer writer.Close()
 
-	for i := 0; i < 100; i++ {
-		err := writer.WriteMessages(context.Background(),
-			kafka.Message{
-				Key:   []byte("Key"),
-				Value: []byte(fmt.Sprintf("Hello, kafka message %d with SSL; TS: %v", i, time.Now().Unix())),
-			},
-		)
+	wg := sync.WaitGroup{}
 
-		if err != nil {
-			return err
-		}
-		randomSleep()
+	for round := 10; round > 0; round-- {
+		wg.Add(1)
+
+		go func() {
+			var msgs = make([]kafka.Message, 0, 100)
+			defer wg.Done()
+
+			for i := 0; i < 100; i++ {
+				message := kafka.Message{
+					Key:   []byte("Key"),
+					Value: []byte(fmt.Sprintf("Hello, kafka message %d with SSL; TS: %v", i, time.Now().Unix())),
+				}
+				msgs = append(msgs, message)
+			}
+
+			writer.WriteMessages(context.Background(), msgs...)
+			randomSleep()
+
+			log.Printf("Producer: batch of messages have been send\n")
+		}()
 	}
 
-	log.Printf("Producer: all messages have been send\n")
+	wg.Wait()
 
+	log.Printf("Producer: all messages have been send\n")
 	return nil
 }
 
@@ -87,30 +100,40 @@ func consume(kafkaBroker, kafkaTopic string, tlsConfig *tls.Config) {
 	}
 
 	reader := kafka.NewReader(kafka.ReaderConfig{
-		Brokers: []string{kafkaBroker},
-		Topic:   kafkaTopic,
-		GroupID: "test",
-		//Partition:   1,
-		StartOffset: kafka.LastOffset,
-		MinBytes:    10e3,
+		Brokers:     []string{kafkaBroker},
+		Topic:       kafkaTopic,
+		GroupID:     "test",
+		StartOffset: kafka.FirstOffset,
+		MinBytes:    1,
 		MaxBytes:    10e6,
 		Dialer:      dialer,
 	})
 
 	defer reader.Close()
 
+	ticker := time.NewTicker(300 * time.Millisecond)
+
+	var batch = make([]kafka.Message, 0, 50)
+	var batchNum = 1
+
 	for {
-		message, err := reader.ReadMessage(context.Background())
-		if err != nil {
-			log.Fatalln(err)
-		}
+		select {
+		case <-ticker.C:
+			fmt.Println(strings.Repeat("~", 40))
+			fmt.Printf("Requesting batch %d of messages\n", batchNum)
+			for len(batch) < 50 {
+				message, err := reader.ReadMessage(context.Background())
+				if err != nil {
+					log.Fatalln(err)
+				}
 
-		log.Printf("received: %s\n", string(message.Value))
+				batch = append(batch, message)
+			}
+			fmt.Println(strings.Repeat("=", 40))
+			fmt.Printf("Processing batch number %d!\n", batchNum)
+			batchNum++
+			batch = batch[:0]
 
-		err = reader.CommitMessages(context.Background(), message)
-		if err != nil {
-			log.Fatal(err)
-			return
 		}
 	}
 }
@@ -135,8 +158,8 @@ func main() {
 var r = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 func randomSleep() {
-	minimum := time.Millisecond * 200
-	maximum := time.Second
+	minimum := time.Millisecond * 100
+	maximum := time.Millisecond * 1000
 	duration := minimum + time.Duration(r.Int63n(int64(maximum-minimum)))
 	time.Sleep(duration)
 }
