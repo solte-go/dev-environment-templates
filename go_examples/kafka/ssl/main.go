@@ -46,10 +46,6 @@ func createTLSConfig(certificateFile, keyFile, caFile string) (*tls.Config, erro
 }
 
 func produce(kafkaBroker, kafkaTopic string, tlsConfig *tls.Config) error {
-	//dialer := &kafka.Dialer{
-	//	TLS: tlsConfig,
-	//}
-
 	writer := &kafka.Writer{
 		Addr:     kafka.TCP(kafkaBroker),
 		Topic:    kafkaTopic,
@@ -116,30 +112,53 @@ func consume(kafkaBroker, kafkaTopic string, tlsConfig *tls.Config) {
 	var batch = make([]kafka.Message, 0, 50)
 	var batchNum = 1
 
+	massageCh := make(chan kafka.Message)
+
+	go func() {
+		for {
+			message, err := reader.ReadMessage(context.Background())
+			if err != nil {
+				log.Fatalln(err)
+			}
+			massageCh <- message
+		}
+	}()
+
 	for {
 		select {
 		case <-ticker.C:
 			fmt.Println(strings.Repeat("~", 40))
-			fmt.Printf("Requesting batch %d of messages\n", batchNum)
+			fmt.Printf("Counsumer: Requesting batch %d of messages\n", batchNum)
+
+			// create a timer
+			idleTimer := time.NewTimer(60 * time.Second)
+
 			for len(batch) < 50 {
-				message, err := reader.ReadMessage(context.Background())
-				if err != nil {
-					log.Fatalln(err)
+				select {
+				case <-idleTimer.C:
+					fmt.Println(strings.Repeat("=", 40))
+					fmt.Println("No activity for 60 seconds. Exiting.")
+					fmt.Printf("Counsumer: Processing the remaining messages from batch %d!\n", batchNum)
+					return
+				case msg := <-massageCh:
+					// reset the timer when a new message is read
+					if !idleTimer.Stop() {
+						<-idleTimer.C
+					}
+					idleTimer.Reset(60 * time.Second)
+					batch = append(batch, msg)
 				}
-
-				batch = append(batch, message)
 			}
-			fmt.Println(strings.Repeat("=", 40))
-			fmt.Printf("Processing batch number %d!\n", batchNum)
-			batchNum++
-			batch = batch[:0]
-
 		}
+
+		fmt.Println(strings.Repeat("=", 40))
+		fmt.Printf("Counsumer: Processing batch number %d!\n", batchNum)
+		batchNum++
+		batch = batch[:0]
 	}
 }
 
 func main() {
-
 	tlsConfig, err := createTLSConfig(certificate, privateKey, caCertificate)
 	if err != nil {
 		log.Fatalf("tls config error: %v\n", err)
