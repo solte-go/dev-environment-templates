@@ -1,0 +1,22 @@
+prometheus:
+  image: prom/prometheus:{{.Prometheus.Version}}
+  build:
+    context: .
+    dockerfile: deploy/prometheus.dockerfile
+  container_name: dev-environment-prometheus-1
+  ports:
+    - "9090:9090"
+  expose:
+    - 9090
+  volumes:
+    - ./configs/prometheus/prometheus_cfg.yaml:/etc/prometheus/cfg.yaml
+  command:
+    - "--storage.tsdb.retention.time=30d"
+    - "--config.file=/etc/prometheus/cfg.yaml"
+  develop:
+    watch:
+      - action: rebuild
+        path: configs/prometheus/
+        target: etc/prometheus/cfg.yaml
+  networks:
+    - dev-environment

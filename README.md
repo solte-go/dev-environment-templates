@@ -1,1 +1,1 @@
-# local_dev_template
+# solte-go/dev-environment-templates

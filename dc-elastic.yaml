@@ -1,5 +1,3 @@
-version: '3.8'
-name: "dev-environment"
 services:
   elasticsearch:
     container_name: dev-environment-elasticsearch-1

@@ -1,5 +1,3 @@
-version: "3.8"
-name: "dev-environment"
 services:
   zookeeper:
     container_name: dev-environment-zookeeper-1
