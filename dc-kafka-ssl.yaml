@@ -1,8 +1,9 @@
 version: '3.8'
-name: "kafka-ssl"
+name: "dev-environment"
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:${KAFKA}
+    container_name: dev-environment-zookeeper-1
     ports:
       - "22182:22182"
     environment:
@@ -13,6 +14,7 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:${KAFKA}
+    container_name: dev-environment-broker-1
     depends_on:
       - zookeeper
     ports:
@@ -39,8 +41,8 @@ services:
       - ./configs/kafka/ssl/certs/broker1:/etc/kafka/secrets
 
   kafka-ui:
-    container_name: kafka_ui
     image: provectuslabs/kafka-ui:latest
+    container_name: dev-environment-kafka-ui-1
     depends_on:
       - zookeeper
       - kafka

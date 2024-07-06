@@ -1,8 +1,6 @@
-version: "3.8"
-name: "rabbig_mq"
 services:
   rabbitmq3:
-    container_name: "rabbitmq"
+    container_name: "dev-environment-rabbitmq-1"
     build:
       context: .
       dockerfile: ./deploy/rabbitmq_with_metrics.dockerfile

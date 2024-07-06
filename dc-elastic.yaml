@@ -1,0 +1,12 @@
+version: '3.8'
+name: "dev-environment"
+services:
+  elasticsearch:
+    container_name: dev-environment-elasticsearch-1
+    image: elasticsearch:${ELASTICSEARCH}
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
