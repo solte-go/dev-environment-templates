@@ -1,8 +1,8 @@
 version: "3.8"
-name: "local_env_template"
+name: "dev-environment"
 services:
   zookeeper:
-    container_name: zookeeper_local_env
+    container_name: dev-environment-zookeeper-1
     image: confluentinc/cp-zookeeper:${KAFKA}
     ports:
       - "22181:2181"
@@ -17,8 +17,8 @@ services:
       retries: 10
 
   kafka:
-    container_name: kafka_brocker_local_env
     image: confluentinc/cp-kafka:${KAFKA}
+    container_name: dev-environment-broker-1
     depends_on:
       - zookeeper
     healthcheck:
@@ -38,8 +38,8 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   kafka-ui:
-    container_name: kafka_ui_local_env
     image: provectuslabs/kafka-ui:latest
+    container_name: dev-environment-kafka-ui-1
     depends_on:
       - kafka
     ports:
@@ -63,7 +63,7 @@ services:
   #      SCHEMA_REGISTRY_DEBUG: "true"
 
   kafka-rest:
-    container_name: kafka_rest_local_env
+    container_name: dev-environment-kafka-rest-1
     image: confluentinc/cp-kafka-rest:${KAFKA_REST}
     hostname: kafka-rest
     ports:

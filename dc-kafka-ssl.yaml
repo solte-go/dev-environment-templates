@@ -1,0 +1,54 @@
+version: '3.8'
+name: "dev-environment"
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:${KAFKA}
+    container_name: dev-environment-zookeeper-1
+    ports:
+      - "22182:22182"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 22182
+      KAFKA_OPTS: "-Djavax.net.debug=ssl"
+    volumes:
+      - ./configs/kafka/ssl/certs:/etc/kafka/secrets
+
+  kafka:
+    image: confluentinc/cp-kafka:${KAFKA}
+    container_name: dev-environment-broker-1
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:22182
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,EXTERNAL://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:SSL
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_SSL_KEY_PASSWORD: kafka12345
+      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.broker1.truststore.jks
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: kafka12345
+      KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.broker1.keystore.jks
+      KAFKA_SSL_KEYSTORE_PASSWORD: kafka12345
+      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: " "
+      KAFKA_SSL_CLIENT_AUTH: requested
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_SECURITY_PROTOCOL: SSL
+      KAFKA_OPTS: "-Djavax.net.debug=ssl"
+    volumes:
+      - ./configs/kafka/ssl/certs/broker1:/etc/kafka/secrets
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: dev-environment-kafka-ui-1
+    depends_on:
+      - zookeeper
+      - kafka
+    ports:
+      - "8081:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      DYNAMIC_CONFIG_ENABLED: "true"

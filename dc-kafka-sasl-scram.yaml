@@ -1,8 +1,9 @@
 version: '3.8'
-name: "local_env_template"
+name: "dev-environment"
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:${KAFKA}
+    container_name: dev-environment-zookeeper-1
     environment:
       ZOOKEEPER_CLIENT_PORT: 2182
       ZOOKEEPER_TICK_TIME: 2000
@@ -14,6 +15,7 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:${KAFKA}
+    container_name: dev-environment-broker-1
     depends_on:
       - zookeeper
     ports:
@@ -33,8 +35,8 @@ services:
       - ./configs/kafka/sasl_scram:/etc/kafka/secrets
 
   kafka-ui:
-    container_name: kafka_ui
     image: provectuslabs/kafka-ui:latest
+    container_name: dev-environment-kafka-ui-1
     depends_on:
       - zookeeper
       - kafka
