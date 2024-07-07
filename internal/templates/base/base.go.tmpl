@@ -1,12 +1,12 @@
 version: "3.8"
 name: "dev-environment"
 services:
-  {{range .Services}}{{.}}
+  {{range .Template.Service}}{{.}}
   {{end}}
 networks:
   dev-environment:
     driver: bridge
 
 volumes:
-  grafana_dev_volume:
-    driver: local
+  {{range .Template.Volume}}{{.}}
+  {{end}}

@@ -2,32 +2,22 @@ package console
 
 import (
 	"fmt"
-	"os"
-	"strings"
+	"kafka-scram-sasl/soltesandbox/internal/templates"
 )
 
-func Menu(dir string) []string {
-	// Get all available templates
-	files, err := os.ReadDir(dir)
-	if err != nil {
-		panic(err)
-	}
-
-	var templates = make(map[int]string)
-	for i, file := range files {
-		filename := file.Name()
-		if strings.HasSuffix(filename, ".go.tmpl") && filename != "base.go.tmpl" {
-			choice := strings.TrimSuffix(filename, ".go.tmpl")
-			templates[i] = choice
-		}
-	}
-
+func Menu(tmpl *templates.Template) {
 	// Menu loop
-	var chosenTemplates []string
+
+	var availableServices = make(map[int]string)
+
+	for k, srv := range tmpl.Services {
+		availableServices[k] = srv.Name
+	}
+
 	for {
 		fmt.Println("\nAvailable Templates:")
-		for i, tmpl := range templates {
-			fmt.Printf("[%d] %s\n", i, tmpl)
+		for i, name := range availableServices {
+			fmt.Printf("[%d] %s\n", i, name)
 		}
 		fmt.Println("[0] Done")
 
@@ -42,10 +32,12 @@ func Menu(dir string) []string {
 		if choice == 0 {
 			break
 		} else if choice > 0 {
-			if value, ok := templates[choice]; ok {
-				chosenTemplates = append(chosenTemplates, value)
-				fmt.Printf("Template added: %v\n", value)
-				delete(templates, choice)
+			if value, ok := tmpl.Services[choice]; ok {
+				//chosenTemplates = append(chosenTemplates, value)
+				value.Build = true
+
+				fmt.Printf("Template added: %v\n", value.Name)
+				delete(availableServices, choice)
 			}
 
 		} else {
@@ -53,5 +45,4 @@ func Menu(dir string) []string {
 		}
 
 	}
-	return chosenTemplates
 }

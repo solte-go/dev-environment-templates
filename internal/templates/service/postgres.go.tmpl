@@ -1,0 +1,19 @@
+postgres:
+  image: postgres:{{.Postgres.Version}}
+  container_name: dev-environment-postgres-1
+  environment:
+    - POSTGRES_PASSWORD=postgres
+  volumes:
+    - postgres_dev_volume:/var/lib/postgresql/data
+    - ./init-database.sh:/docker-entrypoint-initdb.d/init-database.sh
+  ports:
+    - "5432:5432"
+  healthcheck:
+    test:
+      [
+        "CMD-SHELL",
+        "sh -c 'pg_isready -U postgres -d postgres'"
+      ]
+    interval: 20s
+    timeout: 5s
+    retries: 5

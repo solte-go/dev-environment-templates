@@ -10,6 +10,7 @@ type Config struct {
 	Prometheus Prometheus
 	Grafana    Grafana
 	Tempo      Tempo
+	Postgres   Postgres
 }
 
 type Prometheus struct {
@@ -25,6 +26,11 @@ type Grafana struct {
 type Tempo struct {
 	TmplName string `envconfig:"TEMPO_TEMPLATE_NAME" default:"tempo"`
 	Version  string `envconfig:"TEMPO_VERSION" default:"latest"`
+}
+
+type Postgres struct {
+	TmplName string `envconfig:"POSTGRES_TEMPLATE_NAME" default:"tempo"`
+	Version  string `envconfig:"POSTGRES_VERSION" default:"latest"`
 }
 
 func LoadConf() (*Config, error) {
