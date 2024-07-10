@@ -108,10 +108,6 @@ func (t *Template) buildConfigs(conf *config.Config) error {
 	for _, file := range files {
 		filename := file.Name()
 
-		for _, srv := range t.Services {
-			fmt.Println(srv.Name)
-		}
-
 		if strings.HasSuffix(filename, tmplExt) && filename != "base.go.tmpl" {
 			filename = strings.TrimSuffix(filename, tmplExt)
 			for _, s := range t.Services {
@@ -129,12 +125,11 @@ func (t *Template) buildConfigs(conf *config.Config) error {
 }
 
 func parseTemplates(dir, name string, cfg *config.Config) (string, error) {
-	//services := make(map[string]string)
-
 	tmpl, err := template.ParseFiles(path(dir, name))
 	if err != nil {
 		return "", fmt.Errorf("failed to parse templates: %w", err)
 	}
+
 	// Buffer to hold the template execution result
 	var tpl bytes.Buffer
 
@@ -142,9 +137,8 @@ func parseTemplates(dir, name string, cfg *config.Config) (string, error) {
 	if err := tmpl.Execute(&tpl, cfg); err != nil {
 		return "", fmt.Errorf("failed to execute templates: %w", err)
 	}
-	// Add an indent of 2 spaces to each line
-	//result := strings.ReplaceAll(tpl.String(), "\n", "\n  ")
 
+	// Add an indent of 2 spaces to each line and return
 	return strings.ReplaceAll(tpl.String(), "\n", "\n  "), nil
 }
 

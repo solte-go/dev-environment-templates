@@ -4,9 +4,8 @@ services:
   {{range .Template.Service}}{{.}}
   {{end}}
 networks:
-  dev-environment:
-    driver: bridge
-
+  {{range .Template.Volume}}{{.}}
+  {{end}}
 volumes:
   {{range .Template.Volume}}{{.}}
   {{end}}

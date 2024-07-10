@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"kafka-scram-sasl/soltesandbox/internal/config"
 	"kafka-scram-sasl/soltesandbox/internal/console"
 	"kafka-scram-sasl/soltesandbox/internal/templates"
@@ -31,12 +30,12 @@ func main() {
 	}
 	defer outFile.Close()
 
-	fmt.Printf("%+v\n", renderedServices)
-
-	//value, ok := data.(reflect.Value)
-	//if !ok {
-	//	value = reflect.ValueOf(data)
-	//}
+	//fmt.Printf("%+v\n", renderedServices)
+	//
+	////value, ok := data.(reflect.Value)
+	////if !ok {
+	////	value = reflect.ValueOf(data)
+	////}
 
 	//err = tmpl.Base.Execute(outFile, map[string]interface{}{"Services": renderedServices})
 	err = tmpl.Base.Execute(outFile, map[string]interface{}{"Template": renderedServices})
