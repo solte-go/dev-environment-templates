@@ -1,19 +1,17 @@
 services:
   grafana:
-    image: grafana/grafana:${GRAFANA}
-    container_name: dev-environment-grafana-1
+    image: grafana/grafana:${GRAFANA_VERSION}
+    container_name: dev-environment-grafana
     ports:
       - "3000:3000"
     expose:
       - 3000
     restart: unless-stopped
     volumes:
-      - grafana_dev_volume:/var/lib/grafana
+      - grafana_dev_environment_volume:/var/lib/grafana
     networks:
       - dev-environment
 
 volumes:
-  grafana_dev_volume:
+  grafana_dev_environment_volume:
     driver: local
-
-

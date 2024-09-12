@@ -19,19 +19,19 @@ scrape_configs:
     metrics_path: /metrics
     # scheme defaults to 'http'.
     static_configs:
-      - targets: ["192.168.1.34:9091"]
+      - targets: ["172.30.0.1:9091"]
 
   - job_name: "user-management"
     metrics_path: /metrics
     # scheme defaults to 'http'.
     static_configs:
-      - targets: ["192.168.1.34:2112"]
+      - targets: ["192.168.1.121:9091"]
 
   - job_name: "rabbit-mq"
     metrics_path: /metrics
     # scheme defaults to 'http'.
     static_configs:
-      - targets: ["192.168.1.34:15692"]
+      - targets: ["192.168.1.121:15692"]
 
 
 

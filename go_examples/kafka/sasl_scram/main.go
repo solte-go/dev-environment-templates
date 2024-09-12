@@ -18,6 +18,8 @@ const (
 	password = "admin-secret"    // replace with your password
 )
 
+//TODO CHECK IF IT POSSIBLE TO WORK WITHOUT SCRAM
+
 func main() {
 
 	mechanism, err := scram.Mechanism(scram.SHA512, username, password)

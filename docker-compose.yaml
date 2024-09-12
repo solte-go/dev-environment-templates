@@ -1,0 +1,26 @@
+version: "3.8"
+name: "dev-environment"
+services:
+  grafana:
+    image: grafana/grafana:9.1.2
+    container_name: dev-environment-grafana-1
+    ports:
+      - "3000:3000"
+    expose:
+      - 3000
+    restart: unless-stopped
+    volumes:
+      - grafana_dev_volume:/var/lib/grafana
+    networks:
+      - dev-environment
+  
+networks:
+  grafana_dev_volume:
+    driver: local
+  
+  
+volumes:
+  grafana_dev_volume:
+    driver: local
+  
+  

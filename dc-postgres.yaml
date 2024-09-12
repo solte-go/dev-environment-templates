@@ -1,6 +1,6 @@
 services:
   postgres:
-    container_name: dev-environment-postgres-1
+    container_name: dev-environment-postgres
     environment:
       - POSTGRES_PASSWORD=postgres
     volumes:
@@ -19,5 +19,5 @@ services:
       retries: 5
 
 volumes:
-  postgres_dev_volume:
+  postgres_dev_environment_volume:
     driver: local

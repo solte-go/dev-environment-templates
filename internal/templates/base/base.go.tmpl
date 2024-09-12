@@ -4,8 +4,6 @@ services:
   {{range .Template.Service}}{{.}}
   {{end}}
 networks:
-  {{range .Template.Volume}}{{.}}
-  {{end}}
+  {{range .Template.Volume}}{{.}}{{end}}
 volumes:
-  {{range .Template.Volume}}{{.}}
-  {{end}}
+  {{range .Template.Volume}}{{.}}{{end}}

@@ -2,7 +2,7 @@ version: "3.8"
 name: "dev-environment"
 services:
   prometheus:
-    image: prom/prometheus:${PROMETHEUS}
+    image: prom/prometheus:${PROMETHEUS_VERSION}
     build:
       context: .
       dockerfile: deploy/prometheus.dockerfile
@@ -12,15 +12,15 @@ services:
     expose:
       - 9090
     volumes:
-      - ./configs/prometheus.go.tmpl/prometheus_cfg.yaml:/etc/prometheus.go.tmpl/cfg.yaml
+      - ./configs/prometheus/prometheus_cfg.yaml:/etc/prometheus/cfg.yaml
     command:
       - "--storage.tsdb.retention.time=30d"
-      - "--config.file=/etc/prometheus.go.tmpl/cfg.yaml"
+      - "--config.file=/etc/prometheus/cfg.yaml"
     develop:
       watch:
         - action: rebuild
-          path: configs/prometheus.go.tmpl/
-          target: etc/prometheus.go.tmpl/cfg.yaml
+          path: configs/prometheus/
+          target: etc/prometheus/cfg.yaml
     networks:
       - dev-environment
 

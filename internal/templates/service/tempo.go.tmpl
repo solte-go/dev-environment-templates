@@ -1,5 +1,5 @@
 tempo:
-  image: grafana/tempo:{{.Tempo.Version}}
+  image: grafana/tempo:3.24
   container_name: dev-environment-tempo-1
   command: ["-config.file=/etc/tempo.yaml"]
   volumes:

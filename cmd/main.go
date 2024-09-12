@@ -38,7 +38,7 @@ func main() {
 	////}
 
 	//err = tmpl.Base.Execute(outFile, map[string]interface{}{"Services": renderedServices})
-	err = tmpl.Base.Execute(outFile, map[string]interface{}{"Template": renderedServices})
+	err = tmpl.Base.ExecuteTemplate(outFile, "base.go.tmpl", map[string]interface{}{"Template": renderedServices})
 	if err != nil {
 		panic(err)
 	}

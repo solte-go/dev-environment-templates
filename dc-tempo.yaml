@@ -1,11 +1,11 @@
 services:
   tempo:
-    image: grafana/tempo:${TEMPO}
-    container_name: dev-environment-tempo-1
+    image: grafana/tempo:${TEMPO_VERSION}
+    container_name: dev-environment-tempo
     command: ["-config.file=/etc/tempo.yaml"]
     volumes:
       - ./configs/tempo/tempo.yaml:/etc/tempo.yaml
-      - ./configs/tempo/data:/tmp/tempo
+      - tempo_dev_environment_volume:/tmp/tempo
     ports:
       - "14268:14268" # jaeger ingest
       - "3200:3200" # tempo
@@ -16,3 +16,6 @@ services:
     networks:
       - dev-environment
 
+volumes:
+  tempo_dev_environment_volume:
+    driver: local
